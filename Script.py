@@ -1,48 +1,36 @@
 from netmiko import ConnectHandler
 
-# Dados do switch
-switch = {
-    "device_type": "cisco_ios",
-    "host": "192.168.200.1",   # IP do switch
-    "username": "admin",
-    "password": "admin",
-    "secret": "admin",        # enable password
-}
+def configurar_switch(HOSTNAME, VLAN, INTERFACE_VLAN, INTERFACE_SWITCH, VLAN_VALUE, VLAN_MASK):
 
-# Conectar ao switch
-connection = ConnectHandler(**switch)
+    switch = {
+        "device_type": "cisco_ios",
+        "host": "192.168.200.1",
+        "username": "admin",
+        "password": "cisco",
+        "secret": "cisco",
+    }
 
-# Entrar em modo enable
-connection.enable()
+    connection = ConnectHandler(**switch)
+    connection.enable()
 
-# Comandos de configuração
-config_commands = [
-    # Hostname
-    "hostname Switch_Core",
+    config_commands = [
+        f"hostname {HOSTNAME}",
 
-    # Criar VLAN
-    "vlan 12",
-    "name USERS",
+        f"vlan {VLAN}",
+        f"name VLAN_{VLAN}",
 
-    # Interface VLAN (SVI)
-    "interface vlan 12",
-    "ip address 192.168.12.1 255.255.255.0",
-    "no shutdown",
+        f"interface {INTERFACE_VLAN}",
+        f"ip address {VLAN_VALUE} {VLAN_MASK}",
+        "no shutdown",
 
-    # Porta física
-    "interface Ethernet 0/4",
-    "switchport mode access",
-    "switchport access vlan 12",
-    "no shutdown",
-]
+        f"interface {INTERFACE_SWITCH}",
+        "switchport mode access",
+        f"switchport access vlan {VLAN}",
+        "no shutdown",
+    ]
 
-# Enviar configurações
-output = connection.send_config_set(config_commands)
+    output = connection.send_config_set(config_commands)
+    connection.save_config()
+    connection.disconnect()
 
-# Salvar configuração
-connection.save_config()
-
-# Fechar conexão
-connection.disconnect()
-
-print("Configuração aplicada com sucesso!")
+    return output
