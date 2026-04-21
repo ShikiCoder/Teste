@@ -14,9 +14,11 @@ def CONNECT(HOST):
     return CONNECTION
 
 
-# 🔹 1 - CONFIGURAÇÃO COMPLETA DE VLAN
-def CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_VLAN, INTERFACE_SWITCH, VLAN_IP, VLAN_MASK):
+# 🔹 1 - CONFIGURAÇÃO COMPLETA DE VLAN (SVI AUTOMÁTICA)
+def CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_SWITCH, VLAN_IP, VLAN_MASK):
     CONNECTION = CONNECT(HOST)
+
+    INTERFACE_VLAN = VLAN  # 🔥 AUTOMÁTICO
 
     COMMANDS = [
         f"vlan {VLAN}",
@@ -25,6 +27,7 @@ def CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_VLAN, INTERFACE_SWITCH, VLAN
         f"ip address {VLAN_IP} {VLAN_MASK}",
         "no shutdown",
         f"interface {INTERFACE_SWITCH}",
+        "switchport",
         "switchport mode access",
         f"switchport access vlan {VLAN}",
         "no shutdown"
@@ -40,9 +43,7 @@ def CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_VLAN, INTERFACE_SWITCH, VLAN
 # 🔹 2 - MOSTRAR VLANs
 def SHOW_VLAN(HOST):
     CONNECTION = CONNECT(HOST)
-
     OUTPUT = CONNECTION.send_command("show vlan brief")
-
     CONNECTION.disconnect()
     return OUTPUT
 
@@ -71,6 +72,7 @@ def CONFIGURE_INTERFACE(HOST, INTERFACE, VLAN, DESCRIPTION):
 
     COMMANDS = [
         f"interface {INTERFACE}",
+        "switchport",
         f"description {DESCRIPTION}",
         "switchport mode access",
         f"switchport access vlan {VLAN}",
@@ -90,14 +92,13 @@ def CONFIGURE_TRUNK(HOST, INTERFACE, VLANS):
 
     COMMANDS = [
         f"interface {INTERFACE}",
+        "switchport",
         "switchport mode trunk",
         f"switchport trunk allowed vlan {VLANS}",
         "no shutdown"
     ]
 
     CONFIG_OUTPUT = CONNECTION.send_config_set(COMMANDS)
-
-    # 🔥 Mostrar status das interfaces
     SHOW_OUTPUT = CONNECTION.send_command("show interfaces status")
 
     CONNECTION.save_config()
