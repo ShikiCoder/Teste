@@ -10,7 +10,7 @@ from main import (
 def MENU():
     print("\n=== MENU DE CONFIGURAÇÃO DE SWITCH ===")
     print("1 - Configuração completa de VLAN")
-    print("2 - Mostrar VLANs (show vlan brief)")
+    print("2 - Mostrar VLANs")
     print("3 - Ativar/Desativar Interface")
     print("4 - Configurar Interface")
     print("5 - Configurar Trunk")
@@ -18,8 +18,7 @@ def MENU():
 
 
 def OBTER_IP():
-    HOST = input("\nDigite o IP do Switch: ")
-    return HOST
+    return input("\nDigite o IP do Switch: ")
 
 
 # 🔹 1
@@ -27,13 +26,12 @@ def OPCAO_CONFIGURAR_VLAN():
     HOST = OBTER_IP()
     VLAN = input("ID da VLAN: ")
     VLAN_NAME = input("Nome da VLAN: ")
-    INTERFACE_VLAN = input("Interface VLAN (ex: 10): ")
     INTERFACE_SWITCH = input("Porta do Switch (ex: g0/1): ")
     VLAN_IP = input("IP da VLAN: ")
     VLAN_MASK = input("Máscara da VLAN: ")
 
     print("\nAplicando configuração...\n")
-    print(CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_VLAN, INTERFACE_SWITCH, VLAN_IP, VLAN_MASK))
+    print(CONFIGURE_VLAN(HOST, VLAN, VLAN_NAME, INTERFACE_SWITCH, VLAN_IP, VLAN_MASK))
 
 
 # 🔹 2
